@@ -42,11 +42,16 @@
     :lose (losses opp-play)
     :win (wins opp-play)))
 
-(defn score
+(defn parse-line
   [line]
   (let [[opp outcome-char] (str/split line #" ")
         opp-play (plays opp)
-        outcome (outcome outcome-char)
+        outcome (outcome outcome-char)]
+    [opp-play outcome]))
+
+(defn score
+  [line]
+  (let [[opp-play outcome] (parse-line line)
         self-play (determine-my-play opp-play outcome)]
     (+
       (shape-score self-play)
