@@ -35,8 +35,7 @@
 (println (read-input "day4.txt" part1))
 
 (defn any-overlap [assignments]
-  (let [[first second] assignments]
-    (not-empty (set/intersection first second))))
+    (not-empty (apply set/intersection assignments)))
 
 (defn part2 [lines]
   (->> lines
