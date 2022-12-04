@@ -14,7 +14,6 @@
   (with-open [rdr (clojure.java.io/reader (io/resource fname))]
     (f (line-seq rdr))))
 
-
 (defn fully-overlaps [assignments]
   (let [[first second] assignments]
     (or (set/subset? first second)
@@ -23,12 +22,15 @@
 (println (fully-overlaps (parse-line "2-4,6-8")))
 (println (fully-overlaps (parse-line "2-4,2-5")))
 
+(defn count-so [predicate vals]
+  (->> vals
+       (map #(if (predicate %) 1 0))
+       (reduce +)))
+
 (defn part1 [lines]
   (->> lines
        (map parse-line)
-       (map fully-overlaps)
-       (map #(if % 1 0))
-       (reduce +)))
+       (count-so fully-overlaps)))
 
 (println (read-input "day4.txt" part1))
 
@@ -39,8 +41,6 @@
 (defn part2 [lines]
   (->> lines
        (map parse-line)
-       (map any-overlap)
-       (map #(if % 1 0))
-       (reduce +)))
+       (count-so any-overlap)))
 
 (println (read-input "day4.txt" part2))
