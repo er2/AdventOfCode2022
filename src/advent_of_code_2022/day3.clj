@@ -43,16 +43,16 @@
   (with-open [rdr (clojure.java.io/reader (io/resource fname))]
     (f (line-seq rdr))))
 
-(defn do-all [lines]
+(defn part1 [lines]
   (->> lines
        (map rucksack-to-compartments)
        (map common-element)
        (map priority)
        (reduce +)))
 
-(println (do-all (str/split sample #"\n")))
+(println (part1 (str/split-lines sample)))
 
-(println (read-input "day3.txt" do-all))
+(println (read-input "day3.txt" part1))
 
 (defn badge [elves]
   (first (reduce set/intersection (map set elves))))
@@ -63,8 +63,8 @@
 (def second-group
   "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw")
 
-(println (badge (str/split first-group #"\n")))
-(println (badge (str/split second-group #"\n")))
+(println (badge (str/split-lines first-group)))
+(println (badge (str/split-lines second-group)))
 
 (defn part2 [lines]
   (->> lines
