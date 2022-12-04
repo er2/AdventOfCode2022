@@ -53,3 +53,24 @@
 (println (do-all (str/split sample #"\n")))
 
 (println (read-input "day3.txt" do-all))
+
+(defn badge [elves]
+  (first (reduce set/intersection (map set elves))))
+
+(def first-group
+  "vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg")
+
+(def second-group
+  "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw")
+
+(println (badge (str/split first-group #"\n")))
+(println (badge (str/split second-group #"\n")))
+
+(defn part2 [lines]
+  (->> lines
+       (partition 3)
+       (map badge)
+       (map priority)
+       (reduce +)))
+
+(println (read-input "day3.txt" part2))
