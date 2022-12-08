@@ -30,4 +30,11 @@
       (helper-fn 0 coll))))
 
 (println ((sliding-window-gen 14) "mjqjpqmgbljsphdztnvjfqwrcgsmlb"))
-(println (read-input "day6.txt" (sliding-window-gen 14)))
+
+(println "results")
+(def part1-fn
+  (sliding-window-gen 4))
+(def part2-fn
+  (sliding-window-gen 14))
+(println (read-input "day6.txt" part1-fn))
+(println (read-input "day6.txt" part2-fn))
