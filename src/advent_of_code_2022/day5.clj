@@ -49,7 +49,10 @@
      (Integer/parseInt v)]))
 
 (defn parse-instruction [instruction]
-  (into {} (map parse-inst (partition 2 (str/split instruction #" ")))))
+  (->> (str/split instruction #" ")
+       (partition 2)
+       (map parse-inst)
+       (into {})))
 
 (defn parse-instructions [instructions]
   (map parse-instruction (str/split-lines instructions)))
@@ -81,7 +84,11 @@
 (println result1)
 
 (defn end-state-to-answer [state]
-  (apply str (vals (into (sorted-map) (reduce-kv first-val {} state)))))
+  (->> state
+       (reduce-kv first-val {})
+       (into (sorted-map))
+       (vals)
+       (apply str)))
 
 (println (end-state-to-answer result1))
 
