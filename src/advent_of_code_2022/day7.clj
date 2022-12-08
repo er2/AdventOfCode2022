@@ -1,7 +1,7 @@
 (ns advent-of-code-2022.day7
   (:require [clojure.java.io :as io]))
 
-(def state
+(def initial-state
   {:current-directory nil})
 
 (defn add-file [state dir size]
@@ -15,26 +15,33 @@
   (cond
     (re-matches #"\$ cd \.\." line) (assoc state :current-directory (drop 1 (:current-directory state)))
     (re-matches #"\$ cd .*" line) (let [matcher (re-matches #"\$ cd (.*)" line)
-                                        dir-name (get matcher 1)]
+                                        dir-name (second matcher)]
                                     (assoc state :current-directory (conj (:current-directory state) dir-name)))
     (re-matches #"dir .*" line) state
     (re-matches #"\d+ .*" line) (let [matcher (re-matches #"(\d+) .*" line)
-                                      size (Integer/parseInt (get matcher 1))
+                                      size (Integer/parseInt (second matcher))
                                       dir (state :current-directory)]
                                   (add-file state dir size))
     (re-matches #"\$ ls" line) state))
-
-(println (handle {:current-directory '("foo" "bar")} "$ cd .."))
-(println (handle {:current-directory '("foo" "bar")} "$ cd baz"))
-(println (handle {:current-directory '("foo" "bar")} "1234 foo.txt"))
 
 (defn read-input [fname f]
   (with-open [rdr (clojure.java.io/reader (io/resource fname))]
     (f (line-seq rdr))))
 
-(def results (read-input "day7.txt" #(reduce handle state %)))
+(def results (dissoc (read-input "day7.txt" #(reduce handle initial-state %)) :current-directory))
 
-(println (->> (dissoc results :current-directory)
-              (filter #(let [[dir size] %] (< size 100000)))
-              (map #(get % 1))
+(println (->> results
+              (map second)
+              (filter #(< % 100000))
               (reduce +)))
+
+(def need-to-free
+  (let [disk-size 70000000
+        need-for-update 30000000
+        used (results '("/"))]
+    (- need-for-update (- disk-size used))))
+
+(println (->> results
+              (map second)
+              (filter #(> % need-to-free))
+              (reduce min)))
