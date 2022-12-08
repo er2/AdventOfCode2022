@@ -57,7 +57,7 @@
 ;(println (parse-setup (get (read-input "day5.txt") 0)))
 ;(println (parse-instructions (get (read-input "day5.txt") 1)))
 
-(defn run [state instruction]
+(defn run1 [state instruction]
   (let [{move :move
          from :from
          to   :to} instruction
@@ -71,20 +71,33 @@
 (defn first-val [m k v]
   (assoc m k (first v)))
 
-(def result
+(def result1
   (let [[setup-str instructions-str] (read-input "day5.txt")
         setup (parse-setup setup-str)
         instructions (parse-instructions instructions-str)]
-    (println setup)
-    (reduce run setup instructions)))
+    (reduce run1 setup instructions)))
 
-(println result)
+(println result1)
 
-(println (apply str (vals (into (sorted-map) (reduce-kv first-val {} result)))))
+(println (apply str (vals (into (sorted-map) (reduce-kv first-val {} result1)))))
 
-(def sample-data
-  {
-   1 [\Z \N]
-   2 [\M \C \D]
-   3 [\P]
-   })
+(defn run2 [state instruction]
+  (let [{move :move
+         from :from
+         to   :to} instruction
+        froml (state from)
+        [to-move leave] (split-at move froml)
+        newl (concat to-move (state to))]
+    (-> state
+        (assoc from leave)
+        (assoc to newl))))
+
+(def result2
+  (let [[setup-str instructions-str] (read-input "day5.txt")
+        setup (parse-setup setup-str)
+        instructions (parse-instructions instructions-str)]
+    (reduce run2 setup instructions)))
+
+(println result2)
+
+(println (apply str (vals (into (sorted-map) (reduce-kv first-val {} result2)))))
