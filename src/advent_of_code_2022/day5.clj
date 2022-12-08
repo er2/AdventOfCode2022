@@ -46,7 +46,7 @@
 (defn parse-inst [kv]
   (let [[k v] kv]
     [(keyword k)
-    (Integer/parseInt v)]))
+     (Integer/parseInt v)]))
 
 (defn parse-instruction [instruction]
   (into {} (map parse-inst (partition 2 (str/split instruction #" ")))))
@@ -57,10 +57,30 @@
 ;(println (parse-setup (get (read-input "day5.txt") 0)))
 ;(println (parse-instructions (get (read-input "day5.txt") 1)))
 
-(let [[setup-str instructions-str] read-input "day5.txt"
-      setup (parse-setup setup-str)
-      instructions (parse-instructions instructions-str)]
-  )
+(defn run [state instruction]
+  (let [{move :move
+         from :from
+         to   :to} instruction
+        froml (state from)
+        [to-move leave] (split-at move froml)
+        newl (concat (reverse to-move) (state to))]
+    (-> state
+        (assoc from leave)
+        (assoc to newl))))
+
+(defn first-val [m k v]
+  (assoc m k (first v)))
+
+(def result
+  (let [[setup-str instructions-str] (read-input "day5.txt")
+        setup (parse-setup setup-str)
+        instructions (parse-instructions instructions-str)]
+    (println setup)
+    (reduce run setup instructions)))
+
+(println result)
+
+(println (apply str (vals (into (sorted-map) (reduce-kv first-val {} result)))))
 
 (def sample-data
   {
