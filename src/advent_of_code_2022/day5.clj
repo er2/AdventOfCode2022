@@ -37,17 +37,22 @@
 (defn to-string-loc [stack-number]
   (inc (* 4 (dec stack-number))))
 
+(defn make-lookup [setup-lines]
+  (let [char-at (make-char-at setup-lines)]
+    (fn lookup [stack-number element-number]
+      (let [x (to-string-loc stack-number)]
+        (char-at x element-number)))))
+
 (defn parse-setup [s]
   (let [lines (str/split-lines s)
         n-stacks (count-stacks lines)
         max-depth (- (count lines) 2)
-        char-at (make-char-at lines)]
+        lookup (make-lookup lines)]
     (reduce map-merge
             {}
             (for [stack (range 1 (inc n-stacks))
                   elem (count-down max-depth)]
-              (let [x (to-string-loc stack)]
-                [stack (char-at x elem)])))))
+              [stack (lookup stack elem)]))))
 
 (defn parse-inst [kv]
   (let [[k v] kv]
