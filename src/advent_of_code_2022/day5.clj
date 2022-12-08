@@ -11,11 +11,13 @@
 (defn str-count [s ch]
   ((frequencies s) ch))
 
-(defn count-stacks [s]
-  (let [penultimate-line (last (drop-last 1 (str/split-lines s)))]
-    (str-count penultimate-line \[)))
+(defn penultimate [coll]
+  (last (drop-last 1 coll)))
 
-(defn make-chat [lines]
+(defn count-stacks [lines]
+  (str-count (penultimate lines) \[))
+
+(defn make-char-at [lines]
   (fn [x y]
     (get (get lines y) x)))
 
@@ -24,24 +26,28 @@
 
 (defn valid-letter [ch]
   (and
-    (not (nil? ch))
-    (not (= ch \space))))
+    (some? ch)
+    (not= ch \space)))
 
 (defn map-merge [accum elem]
-  (let [[k v] elem]
-    (assoc accum k (filter valid-letter (cons v (accum k))))))
+  (let [[k v] elem
+        newvalue (filter valid-letter (cons v (accum k)))]
+    (assoc accum k newvalue)))
+
+(defn to-string-loc [stack-number]
+  (inc (* 4 (dec stack-number))))
 
 (defn parse-setup [s]
-  (let [n-stacks (count-stacks s)
-        lines (str/split-lines s)
+  (let [lines (str/split-lines s)
+        n-stacks (count-stacks lines)
         max-depth (- (count lines) 2)
-        chat (make-chat lines)]
+        char-at (make-char-at lines)]
     (reduce map-merge
             {}
-            (for [stack (range 1 (+ 1 n-stacks))
+            (for [stack (range 1 (inc n-stacks))
                   elem (count-down max-depth)]
-              (let [x (+ 1 (* 4 (- stack 1)))]
-                [stack (chat x elem)])))))
+              (let [x (to-string-loc stack)]
+                [stack (char-at x elem)])))))
 
 (defn parse-inst [kv]
   (let [[k v] kv]
