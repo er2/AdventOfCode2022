@@ -54,50 +54,40 @@
 (defn parse-instructions [instructions]
   (map parse-instruction (str/split-lines instructions)))
 
-;(println (parse-setup (get (read-input "day5.txt") 0)))
-;(println (parse-instructions (get (read-input "day5.txt") 1)))
-
-(defn run1 [state instruction]
-  (let [{move :move
-         from :from
-         to   :to} instruction
-        froml (state from)
-        [to-move leave] (split-at move froml)
-        newl (concat (reverse to-move) (state to))]
-    (-> state
-        (assoc from leave)
-        (assoc to newl))))
+(defn make-run [part-func]
+  (fn [state instruction]
+    (let [{move :move
+           from :from
+           to   :to} instruction
+          froml (state from)
+          [to-move leave] (split-at move froml)
+          newl (concat (part-func to-move) (state to))]
+      (-> state
+          (assoc from leave)
+          (assoc to newl)))))
 
 (defn first-val [m k v]
   (assoc m k (first v)))
 
-(def result1
+(defn exec [run-func]
   (let [[setup-str instructions-str] (read-input "day5.txt")
         setup (parse-setup setup-str)
         instructions (parse-instructions instructions-str)]
-    (reduce run1 setup instructions)))
+    (reduce run-func setup instructions)))
+
+(def result1
+  (exec (make-run reverse)))
 
 (println result1)
 
-(println (apply str (vals (into (sorted-map) (reduce-kv first-val {} result1)))))
+(defn end-state-to-answer [state]
+  (apply str (vals (into (sorted-map) (reduce-kv first-val {} state)))))
 
-(defn run2 [state instruction]
-  (let [{move :move
-         from :from
-         to   :to} instruction
-        froml (state from)
-        [to-move leave] (split-at move froml)
-        newl (concat to-move (state to))]
-    (-> state
-        (assoc from leave)
-        (assoc to newl))))
+(println (end-state-to-answer result1))
 
 (def result2
-  (let [[setup-str instructions-str] (read-input "day5.txt")
-        setup (parse-setup setup-str)
-        instructions (parse-instructions instructions-str)]
-    (reduce run2 setup instructions)))
+  (exec (make-run identity)))
 
 (println result2)
 
-(println (apply str (vals (into (sorted-map) (reduce-kv first-val {} result2)))))
+(println (end-state-to-answer result2))
