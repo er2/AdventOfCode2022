@@ -43,9 +43,24 @@
               (let [x (+ 1 (* 4 (- stack 1)))]
                 [stack (chat x elem)])))))
 
-;(println (read-input "day5.txt"))
-(println (parse-setup "    [D]\n[N] [C]    \n[Z] [M] [P]\n 1   2   3"))
+(defn parse-inst [kv]
+  (let [[k v] kv]
+    [(keyword k)
+    (Integer/parseInt v)]))
 
+(defn parse-instruction [instruction]
+  (into {} (map parse-inst (partition 2 (str/split instruction #" ")))))
+
+(defn parse-instructions [instructions]
+  (map parse-instruction (str/split-lines instructions)))
+
+;(println (parse-setup (get (read-input "day5.txt") 0)))
+;(println (parse-instructions (get (read-input "day5.txt") 1)))
+
+(let [[setup-str instructions-str] read-input "day5.txt"
+      setup (parse-setup setup-str)
+      instructions (parse-instructions instructions-str)]
+  )
 
 (def sample-data
   {
