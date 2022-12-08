@@ -38,8 +38,9 @@
 (def need-to-free
   (let [disk-size 70000000
         need-for-update 30000000
-        used (results '("/"))]
-    (- need-for-update (- disk-size used))))
+        used (results '("/"))
+        currently-free (- disk-size used)]
+    (- need-for-update currently-free)))
 
 (println (->> results
               (map second)
