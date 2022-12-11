@@ -14,17 +14,29 @@
         (str)
         (Integer/parseInt))))
 
+(defn height-map [lines max-x max-y]
+  (let [height-at (make-height-at lines)]
+    (into {} (for [y (range max-y)
+                   x (range max-x)]
+               [[x y] (height-at [x y])]))))
+
 (defn parse-forest [file-contents]
-  (let [lines (str/split-lines file-contents)]
-    {:max-x     (count (first lines))
-     :max-y     (count lines)
-     :height-at (make-height-at lines)}))
+  (let [lines (str/split-lines file-contents)
+        max-x (count (first lines))
+        max-y (count lines)]
+    {:max-x     max-x
+     :max-y     max-y
+     :height-at (height-map lines max-x max-y)}))
+
+(defn count-down [x]
+  "counts from x (exclusive) down to 0 (inclusive)"
+  (range (dec x) -1 -1))
 
 (defn make-get-potential-blockers [max-x max-y]
   (fn get-potential-blockers [x y]
-    {:w (map (fn [x] [x y]) (range 0 x))
+    {:w (map (fn [x] [x y]) (count-down x))
      :e (map (fn [x] [x y]) (range (inc x) max-x))
-     :n (map (fn [y] [x y]) (range 0 y))
+     :n (map (fn [y] [x y]) (count-down y))
      :s (map (fn [y] [x y]) (range (inc y) max-y))}))
 
 (defn map-values [m v-func]
@@ -39,9 +51,9 @@
 (defn blocked? [height potential-blocker-heights]
   (let [blocks #(blocked-by height %)]
     (->> potential-blocker-heights
-        (vals)
-        (map blocks)
-        (every? true?))))
+         (vals)
+         (map blocks)
+         (every? true?))))
 
 (defn count-true [coll]
   (count (filter true? coll)))
@@ -57,7 +69,17 @@
                   is-blocked (blocked? height potential-blocker-heights)]]
         (not is-blocked)))))
 
-(-> (read-input "day8.txt")
-    (parse-forest)
-    (count-visible-trees)
-    (println))
+(->> (read-input "day8.txt")
+     (parse-forest)
+     (count-visible-trees)
+     (println "Part 1:"))
+
+(defn visible-in-one-direction [height trees]
+  (count (take-while #(< % height) trees)))
+
+(println "1" (visible-in-one-direction 5 [1]))
+(println "0" (visible-in-one-direction 5 [8]))
+(println "1" (visible-in-one-direction 5 [1 8]))
+(println "2" (visible-in-one-direction 5 [1 5 8]))
+(println "2" (visible-in-one-direction 5 [1 5 5 8]))
+
