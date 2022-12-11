@@ -82,7 +82,10 @@
           0 trees))
 
 (defn visible-in-all-directions [height potential-blockers]
-  (reduce * (map #(visible-in-one-direction height %) (vals potential-blockers))))
+  (->> potential-blockers
+      (vals)
+      (map #(visible-in-one-direction height %))
+      (reduce *)))
 
 (defn count-visible-trees [{:keys [max-x max-y height-at]}]
   (let [get-potential-blockers (make-get-potential-blockers max-x max-y)]
