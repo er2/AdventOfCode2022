@@ -30,10 +30,11 @@
 
 (def results (dissoc (read-input "day7.txt" #(reduce handle initial-state %)) :current-directory))
 
-(println (->> results
-              (map second)
-              (filter #(< % 100000))
-              (reduce +)))
+(->> results
+     (map second)
+     (filter #(< % 100000))
+     (reduce +)
+     (println))
 
 (def need-to-free
   (let [disk-size 70000000
@@ -42,7 +43,8 @@
         currently-free (- disk-size used)]
     (- need-for-update currently-free)))
 
-(println (->> results
-              (map second)
-              (filter #(> % need-to-free))
-              (reduce min)))
+(->> results
+     (map second)
+     (filter #(> % need-to-free))
+     (reduce min)
+     (println))
