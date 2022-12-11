@@ -75,11 +75,26 @@
      (println "Part 1:"))
 
 (defn visible-in-one-direction [height trees]
-  (count (take-while #(< % height) trees)))
+  (reduce (fn [accum elem]
+            (if (<= height elem)
+              (reduced (inc accum))
+              (inc accum)))
+          0 trees))
 
-(println "1" (visible-in-one-direction 5 [1]))
-(println "0" (visible-in-one-direction 5 [8]))
-(println "1" (visible-in-one-direction 5 [1 8]))
-(println "2" (visible-in-one-direction 5 [1 5 8]))
-(println "2" (visible-in-one-direction 5 [1 5 5 8]))
+(defn visible-in-all-directions [height potential-blockers]
+  (reduce * (map #(visible-in-one-direction height %) (vals potential-blockers))))
 
+(defn count-visible-trees [{:keys [max-x max-y height-at]}]
+  (let [get-potential-blockers (make-get-potential-blockers max-x max-y)]
+    (reduce max
+            (for [y (range max-y)
+                  x (range max-x)
+                  :let [height (height-at [x y])
+                        potential-blockers (get-potential-blockers x y)
+                        potential-blocker-heights (blocker-heights potential-blockers height-at)]]
+              (visible-in-all-directions height potential-blocker-heights)))))
+
+(->> (read-input "day8.txt")
+     (parse-forest)
+     (count-visible-trees)
+     (println "Part 2:"))
