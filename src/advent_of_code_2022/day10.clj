@@ -17,11 +17,11 @@
   (let [{cycle :cycle
          total :total} (last states)]
     (if (= :noop instr)
-      (conj states {:cycle (inc cycle) :total total})
-      (let [newval (+ instr total)]
-        (conj states
-              {:cycle (inc cycle) :total total}
-              {:cycle (inc (inc cycle)) :total newval})))))
+      (conj states
+            {:cycle (inc cycle) :total total})
+      (conj states
+            {:cycle (inc cycle) :total total}
+            {:cycle (inc (inc cycle)) :total (+ instr total)}))))
 
 (defn run [lines]
   (->> lines
@@ -44,5 +44,17 @@
   (if (= 0 (mod index 2))
     item))
 
-(println (reduce + (keep-indexed keep-odds (keep-indexed signal-strength (map :total states)))))
+(->> states
+     (map :total)
+     (keep-indexed signal-strength)
+     (keep-indexed keep-odds)
+     (reduce +)
+     (println))
 
+(doseq [state states
+        :let [{cycle :cycle
+               value :total} state
+              x (mod (dec cycle) 40)
+              lit (#{(inc x) x (dec x)} value)]]
+  (print (if lit \█ \space))
+  (if (= 39 x) (println)))
